@@ -1,5 +1,6 @@
 package com.artxak.recommendations;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.artxak.recommendations.api.Etsy;
+import com.artxak.recommendations.google.GoogleServicesHelper;
 import com.artxak.recommendations.model.ActiveListings;
 import com.artxak.recommendations.model.ListingAdapter;
 
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private View mProgressBar;
     private TextView mErrorView;
     private ListingAdapter mAdapter;
+    private GoogleServicesHelper mGoogleServicesHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,17 +39,33 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new ListingAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
-        if (savedInstanceState == null) {
-            showLoading();
-            Etsy.getActiveListings(mAdapter);
-        } else {
+        mGoogleServicesHelper = new GoogleServicesHelper(this, mAdapter);
+
+        showLoading();
+
+        if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
                 mAdapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
-            } else {
-                showLoading();
-                Etsy.getActiveListings(mAdapter);
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleServicesHelper.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleServicesHelper.disconnect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mGoogleServicesHelper.handleActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import com.artxak.recommendations.MainActivity;
 import com.artxak.recommendations.R;
+import com.artxak.recommendations.api.Etsy;
+import com.artxak.recommendations.google.GoogleServicesHelper;
 import com.squareup.picasso.Picasso;
 
 import retrofit.Callback;
@@ -17,15 +19,18 @@ import retrofit.client.Response;
 
 
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingHolder>
-        implements Callback<ActiveListings> {
+        implements Callback<ActiveListings>, GoogleServicesHelper.GoogleServicesListener {
 
     private MainActivity mActivity;
     private LayoutInflater mLayoutInflater;
     private ActiveListings mActiveListings;
 
+    private boolean mIsGooglePlayServicesAvailable;
+
     public ListingAdapter(MainActivity activity) {
         mActivity = activity;
         mLayoutInflater = LayoutInflater.from(activity);
+        mIsGooglePlayServicesAvailable = false;
     }
 
     @Override
@@ -39,6 +44,12 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
         holder.mListingTitle.setText(listing.title);
         holder.mListingShopName.setText(listing.Shop.shop_name);
         holder.mListingPrice.setText(listing.price);
+
+        if (mIsGooglePlayServicesAvailable) {
+
+        } else {
+
+        }
 
         Picasso.with(holder.mImageView.getContext())
                 .load(listing.Images[0].url_570xN)
@@ -68,6 +79,28 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
 
     public ActiveListings getActiveListings() {
         return mActiveListings;
+    }
+
+    @Override
+    public void onConnected() {
+
+        if (getItemCount() == 0) {
+            Etsy.getActiveListings(this);
+        }
+
+        mIsGooglePlayServicesAvailable = true;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onDisconnected() {
+
+        if (getItemCount() == 0) {
+            Etsy.getActiveListings(this);
+        }
+
+        mIsGooglePlayServicesAvailable = false;
+        notifyDataSetChanged();  // Make sure we update the RecyclerView's items.
     }
 
     public class ListingHolder extends RecyclerView.ViewHolder {
