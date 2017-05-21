@@ -11,7 +11,7 @@ public class Etsy {
 
     public static final String API_KEY = "ea8d34nv7rwzlfovf0bolc82";
 
-    // 763709590568-ku3d7k3a8nbu44549cn7fbt3i7k8tlqf.apps.googleusercontent.com
+    //
 
     private static RequestInterceptor getInterceptor() {
         return new RequestInterceptor() {
