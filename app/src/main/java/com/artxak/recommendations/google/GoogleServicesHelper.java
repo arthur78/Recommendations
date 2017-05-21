@@ -10,12 +10,14 @@ import android.support.annotation.Nullable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 
 public class GoogleServicesHelper implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
     private static final int REQUEST_CODE_AVAILABILITY = -101;
     private static final int REQUEST_CODE_RESOLUTION = -100;
+    private static final String GOOGLE_API_KEY = "763709590568-ku3d7k3a8nbu44549cn7fbt3i7k8tlqf.apps.googleusercontent.com";
 
     public interface GoogleServicesListener {
         public void onConnected();
@@ -35,6 +37,8 @@ public class GoogleServicesHelper implements GoogleApiClient.ConnectionCallbacks
         mApiClient = new GoogleApiClient.Builder(activity)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(Plus.API,
+                        Plus.PlusOptions.builder().setServerClientId(GOOGLE_API_KEY).build())
                 .build();
     }
 

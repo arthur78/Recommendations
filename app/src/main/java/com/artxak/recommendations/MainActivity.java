@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mGoogleServicesHelper.handleActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ListingAdapter.REQUEST_CODE_PLUS_ONE) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
